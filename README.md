@@ -2,7 +2,7 @@
 
 🪄 Automatically convert a PDF into a fillable form.
 
-![Pipeline](assets/pipeline.png)
+![Pipeline](https://raw.githubusercontent.com/jbarrow/commonforms/main/assets/pipeline.png)
 
 This repo contains three things:
 1. the pip-installable `commonforms` package, which has a CLI and API for converting PDFs into fillable forms
@@ -36,7 +36,7 @@ commonforms <input.pdf> <output.pdf>
 
 | Input | Output |
 |-------|--------|
-| ![Input PDF](assets/input.png) | ![Output PDF](assets/output.png) |
+| ![Input PDF](https://raw.githubusercontent.com/jbarrow/commonforms/main/assets/input.png) | ![Output PDF](https://raw.githubusercontent.com/jbarrow/commonforms/main/assets/output.png) |
 
 ### Command Line Arguments
 
