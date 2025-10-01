@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "commonforms"
 version = "0.1.0"
-description = "Add your description here"
+description = "Automatically convert a PDF into a fillable form"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
