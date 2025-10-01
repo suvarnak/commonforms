@@ -15,13 +15,7 @@ This repo contains three things:
 CommonForms can be installed with either `uv` or `pip`, feel free to choose your package manager flavor:
 
 ```sh
-pip install commonforms
-```
-
-or
-
-```sh
-uv install commonforms
+uv pip install commonforms
 ```
 
 Once it's installed, you should be able to run the CLI command on ~any PDF.
