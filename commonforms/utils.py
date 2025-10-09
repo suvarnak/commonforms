@@ -13,11 +13,8 @@ class BoundingBox(BaseModel):
     y1: float
 
     @classmethod
-    def from_yolo(
-        cls, cx: float, cy: float, w: float, h: float
-    ) -> BoundingBox:
-       return cls(x0=cx - w / 2, y0=cy - h / 2, x1=cx + w / 2, y1=cy + h / 2)
-
+    def from_yolo(cls, cx: float, cy: float, w: float, h: float) -> BoundingBox:
+        return cls(x0=cx - w / 2, y0=cy - h / 2, x1=cx + w / 2, y1=cy + h / 2)
 
 
 class Widget(BaseModel):
@@ -35,4 +32,3 @@ class Page:
     image: Image.Image
     width: float
     height: float
-

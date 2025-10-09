@@ -1,4 +1,4 @@
-from typing import TypedDict 
+from typing import TypedDict
 from pypdf import PdfWriter, PdfReader
 from pypdf.annotations import AnnotationDictionary
 from pypdf.generic import (
@@ -20,12 +20,10 @@ def rect_for(bounding_box: BoundingBox, page) -> ArrayObject:
     # here I'm flipping the page.top/page.bottom to change from top-left origin
     # to bottom-right origin; this results in a negative height, but the math
     # works out in the end
-    page_x0, page_y0, page_x1, page_y1 = (
-        page.left, page.top, page.right, page.bottom
-    )
-    page_width  = page_x1 - page_x0
+    page_x0, page_y0, page_x1, page_y1 = (page.left, page.top, page.right, page.bottom)
+    page_width = page_x1 - page_x0
     page_height = page_y1 - page_y0
-    
+
     x0 = page_x0 + (bounding_box.x0 * page_width)
     y0 = page_y0 + (bounding_box.y1 * page_height)
     x1 = page_x0 + (bounding_box.x1 * page_width)
@@ -66,9 +64,7 @@ class Textbox(AnnotationDictionary):
                 NameObject("/T"): TextStringObject(name or ""),
                 NameObject("/V"): TextStringObject(value or ""),
                 NameObject("/DV"): TextStringObject(default_value or ""),
-                NameObject("/Ff"): NumberObject(
-                    0 if not multiline else (1 << 12)
-                ),
+                NameObject("/Ff"): NumberObject(0 if not multiline else (1 << 12)),
                 NameObject("/Rect"): rect,
                 NameObject("/DA"): TextStringObject("/Helv 0 Tf 0 0 0 rg"),
             }
@@ -135,7 +131,7 @@ class PyPdfFormCreator:
             }
         )
         self.zapf_font = self.writer._add_object(zapf_font)
-        
+
     def clear_existing_fields(self):
         """Clear all existing form fields from the PDF."""
         # Get the root form object if it exists
@@ -146,7 +142,7 @@ class PyPdfFormCreator:
                 if NameObject("/Fields") in acroform:
                     # Replace with empty array to clear all fields
                     acroform[NameObject("/Fields")] = ArrayObject()
-        
+
         # Also clear widget annotations from each page
         for i in range(len(self.writer.pages)):
             page = self.writer.pages[i]
@@ -164,16 +160,12 @@ class PyPdfFormCreator:
         textbox = Textbox(name=name, rect=rect, multiline=multiline)
         self.writer.add_annotation(page_number=page, annotation=textbox)
 
-    def add_checkbox(
-        self, name: str, page: int, bounding_box: BoundingBox
-    ) -> None:
+    def add_checkbox(self, name: str, page: int, bounding_box: BoundingBox) -> None:
         rect = rect_for(bounding_box, self.writer.pages[page])
         checkbox = Checkbox(name=name, rect=rect)
         self.writer.add_annotation(page_number=page, annotation=checkbox)
 
-    def add_signature(
-        self, name: str, page: int, bounding_box: BoundingBox
-    ) -> None:
+    def add_signature(self, name: str, page: int, bounding_box: BoundingBox) -> None:
         rect = rect_for(bounding_box, self.writer.pages[page])
         signature = Signature(name=name, rect=rect)
         self.writer.add_annotation(page_number=page, annotation=signature)

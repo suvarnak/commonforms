@@ -20,11 +20,7 @@ class YOLODetector:
 
         self.model = YOLO(model_path)
         self.device = device
-        self.id_to_cls = {
-            0: "TextBox",
-            1: "ChoiceButton",
-            2: "Signature"
-        }
+        self.id_to_cls = {0: "TextBox", 1: "ChoiceButton", 2: "Signature"}
 
     def extract_widgets(
         self, pages: list[Page], confidence: float = 0.3, image_size: int = 1600
@@ -50,11 +46,13 @@ class YOLODetector:
                 cls_id = int(box.cls.item())
                 widget_type = self.id_to_cls[cls_id]
 
-                widgets[page_ix].append(Widget(
-                    widget_type=widget_type,
-                    bounding_box=BoundingBox.from_yolo(cx=x, cy=y, w=w, h=h),
-                    page=page_ix,
-                ))
+                widgets[page_ix].append(
+                    Widget(
+                        widget_type=widget_type,
+                        bounding_box=BoundingBox.from_yolo(cx=x, cy=y, w=w, h=h),
+                        page=page_ix,
+                    )
+                )
 
             # do our best to sort the widgets into something resembling reading
             # order; this is important for being able to Tab/Shift-Tab back and
@@ -112,9 +110,7 @@ def render_pdf(pdf_path: str) -> list[Page]:
     try:
         for page in doc:
             image = page.render()
-            pages.append(
-                Page(image=image, width=image.width, height=image.height)
-            )
+            pages.append(Page(image=image, width=image.width, height=image.height))
         return pages
     finally:
         doc.document.close()
@@ -129,12 +125,14 @@ def prepare_form(
     use_signature_fields: bool = False,
     device: int | str = "cpu",
     image_size: int = 1600,
-    confidence: float = 0.3
+    confidence: float = 0.3,
 ):
     detector = YOLODetector(model_or_path, device=device)
     pages = render_pdf(input_path)
 
-    results = detector.extract_widgets(pages, confidence=confidence, image_size=image_size)
+    results = detector.extract_widgets(
+        pages, confidence=confidence, image_size=image_size
+    )
 
     writer = PyPdfFormCreator(input_path)
     if not keep_existing_fields:
