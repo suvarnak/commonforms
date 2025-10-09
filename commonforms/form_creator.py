@@ -120,8 +120,11 @@ class Signature(AnnotationDictionary):
 class PyPdfFormCreator:
     def __init__(self, input_path: str):
         self.reader = PdfReader(input_path)
+        # prevent name collisions with our new form elements if we don't clear
+        self.reader.add_form_topname("original")
         self.writer = PdfWriter(clone_from=self.reader)
-        self.reader.add_form_topname("")
+        # close the reader once it's been cloned
+        self.reader.close()
 
         zapf_font = DictionaryObject(
             {
@@ -157,21 +160,21 @@ class PyPdfFormCreator:
         bounding_box: BoundingBox,
         multiline: bool = False,
     ) -> None:
-        rect = rect_for(bounding_box, self.reader.pages[page])
+        rect = rect_for(bounding_box, self.writer.pages[page])
         textbox = Textbox(name=name, rect=rect, multiline=multiline)
         self.writer.add_annotation(page_number=page, annotation=textbox)
 
     def add_checkbox(
         self, name: str, page: int, bounding_box: BoundingBox
     ) -> None:
-        rect = rect_for(bounding_box, self.reader.pages[page])
+        rect = rect_for(bounding_box, self.writer.pages[page])
         checkbox = Checkbox(name=name, rect=rect)
         self.writer.add_annotation(page_number=page, annotation=checkbox)
 
     def add_signature(
         self, name: str, page: int, bounding_box: BoundingBox
     ) -> None:
-        rect = rect_for(bounding_box, self.reader.pages[page])
+        rect = rect_for(bounding_box, self.writer.pages[page])
         signature = Signature(name=name, rect=rect)
         self.writer.add_annotation(page_number=page, annotation=signature)
 
@@ -181,5 +184,4 @@ class PyPdfFormCreator:
             self.writer.write(fp)
 
     def close(self) -> None:
-        self.reader.close()
         self.writer.close()
