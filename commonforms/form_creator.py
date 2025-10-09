@@ -179,3 +179,7 @@ class PyPdfFormCreator:
         self.writer.reattach_fields()
         with open(output_path, "wb") as fp:
             self.writer.write(fp)
+
+    def close(self) -> None:
+        self.reader.close()
+        self.writer.close()

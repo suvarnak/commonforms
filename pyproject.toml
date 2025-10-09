@@ -4,10 +4,10 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "commonforms"
-version = "0.1.1"
+version = "0.1.2"
 description = "Automatically convert a PDF into a fillable form"
 readme = "README.md"
-requires-python = ">=3.12"
+requires-python = ">=3.11"
 urls = { Homepage = "https://github.com/jbarrow/commonforms" }
 dependencies = [
     "formalpdf==0.1.5",
@@ -25,3 +25,8 @@ packages = ["commonforms"]
 
 [tool.setuptools.package-data]
 commonforms = ["models/*.pt"]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.4.2",
+]

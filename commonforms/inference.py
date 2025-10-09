@@ -155,3 +155,4 @@ def prepare_form(
                     writer.add_text_box(name, page_ix, widget.bounding_box)
 
     writer.save(output_path)
+    writer.close()
