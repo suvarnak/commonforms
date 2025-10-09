@@ -3,7 +3,6 @@ from typing import Literal
 from pydantic import BaseModel
 from dataclasses import dataclass
 from PIL import Image
-from pypdf.generic import ArrayObject, NumberObject
 
 
 class BoundingBox(BaseModel):

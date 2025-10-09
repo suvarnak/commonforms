@@ -1,4 +1,3 @@
-from typing import TypedDict
 from pypdf import PdfWriter, PdfReader
 from pypdf.annotations import AnnotationDictionary
 from pypdf.generic import (
@@ -7,7 +6,6 @@ from pypdf.generic import (
     NumberObject,
     TextStringObject,
     DictionaryObject,
-    StreamObject,
 )
 
 from commonforms.utils import BoundingBox
