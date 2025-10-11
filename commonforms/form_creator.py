@@ -114,11 +114,10 @@ class Signature(AnnotationDictionary):
 class PyPdfFormCreator:
     def __init__(self, input_path: str):
         self.reader = PdfReader(input_path)
-        # prevent name collisions with our new form elements if we don't clear
-        self.reader.add_form_topname("original")
+        # NOTE: Commenting out add_form_topname as it causes lazy loading issues with pages
+        # self.reader.add_form_topname("original")
         self.writer = PdfWriter(clone_from=self.reader)
-        # close the reader once it's been cloned
-        self.reader.close()
+        # Keep reader open until we're done - pypdf uses lazy loading
 
         zapf_font = DictionaryObject(
             {
@@ -175,3 +174,4 @@ class PyPdfFormCreator:
 
     def close(self) -> None:
         self.writer.close()
+        self.reader.close()
