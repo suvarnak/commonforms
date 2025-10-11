@@ -8,34 +8,55 @@ from commonforms.form_creator import PyPdfFormCreator
 import formalpdf
 
 
-class YOLODetector:
+class FFDNetDetector:
     def __init__(self, model_or_path: str, device: int | str = "cpu") -> None:
+        self.device = device
+        model_path = self.get_model_path(model_or_path, device)
+        self.model = YOLO(model_path, task="detect")
+        self.id_to_cls = {0: "TextBox", 1: "ChoiceButton", 2: "Signature"}
+
+    def get_model_path(self, model_or_path: str, device: int | str = "cpu") -> str:
+        """
+        Construct the path to the model weights based on:
+         (a) the requested model
+         (b) the device (if it's on CPU and a standard model is chosen, default to ONNX)
+        """
         model_upper = model_or_path.upper()
         if model_upper in ["FFDNET-S", "FFDNET-L"]:
+            extension = "pt" if isinstance(device, int) and device >= 0 else "onnx"
             # load from the package - normalize to proper case
             model_name = "FFDNet-S" if model_upper == "FFDNET-S" else "FFDNet-L"
-            model_path = Path(__file__).parent / "models" / f"{model_name}.pt"
+            model_path = Path(__file__).parent / "models" / f"{model_name}.{extension}"
+            print(f"using model: {model_path}")
         else:
             model_path = model_or_path
 
-        self.model = YOLO(model_path)
-        self.device = device
-        self.id_to_cls = {0: "TextBox", 1: "ChoiceButton", 2: "Signature"}
+        return model_path
 
     def extract_widgets(
         self, pages: list[Page], confidence: float = 0.3, image_size: int = 1600
     ) -> dict[int, list[Widget]]:
-        results = self.model.predict(
-            [p.image for p in pages],
-            iou=0.1,
-            conf=confidence,
-            augment=True,
-            imgsz=image_size,
-            device=self.device,
-        )
+        if self.device == "cpu":
+            results = [
+                self.model.predict(
+                    p.image, iou=1, conf=confidence, augment=True, imgsz=1216
+                )
+                for p in pages
+            ]
+        else:
+            results = self.model.predict(
+                [p.image for p in pages],
+                iou=0.1,
+                conf=confidence,
+                augment=True,
+                imgsz=image_size,
+                device=self.device,
+            )
 
         widgets = {}
         for page_ix, result in enumerate(results):
+            if isinstance(result, list):
+                result = result[0]
             # no predictions, skip page
             if result is None or result.boxes is None:
                 continue
@@ -127,7 +148,7 @@ def prepare_form(
     image_size: int = 1600,
     confidence: float = 0.3,
 ):
-    detector = YOLODetector(model_or_path, device=device)
+    detector = FFDNetDetector(model_or_path, device=device)
     pages = render_pdf(input_path)
 
     results = detector.extract_widgets(
