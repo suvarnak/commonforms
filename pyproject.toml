@@ -11,6 +11,9 @@ requires-python = ">=3.11"
 urls = { Homepage = "https://github.com/jbarrow/commonforms" }
 dependencies = [
     "formalpdf==0.1.5",
+    "onnx>=1.19.1",
+    "onnxruntime>=1.23.1",
+    "onnxslim>=0.1.71",
     "pillow>=11.3.0",
     "pydantic>=2.11.9",
     "pypdf>=6.1.1",
