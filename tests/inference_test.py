@@ -18,7 +18,7 @@ def test_inference(tmp_path):
 def test_inference_fast(tmp_path):
     # tmp_path is a built-in pythest fixture where we'll write the outputs
     output_path = tmp_path / "output.pdf"
-    commonforms.prepare_form("./tests/resources/input.pdf", output_path, use_fast=True)
+    commonforms.prepare_form("./tests/resources/input.pdf", output_path, fast=True)
 
     assert output_path.exists()
 

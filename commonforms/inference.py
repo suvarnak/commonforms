@@ -151,9 +151,9 @@ def prepare_form(
     device: int | str = "cpu",
     image_size: int = 1600,
     confidence: float = 0.3,
-    use_fast: bool = False,
+    fast: bool = False,
 ):
-    detector = FFDNetDetector(model_or_path, device=device, use_fast=use_fast)
+    detector = FFDNetDetector(model_or_path, device=device, fast=fast)
     pages = render_pdf(input_path)
 
     results = detector.extract_widgets(
