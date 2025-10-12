@@ -63,7 +63,7 @@ def main():
         device=args.device,
         image_size=args.image_size,
         confidence=args.confidence,
-        use_fast=args.fast,
+        fast=args.fast,
     )
 
 
