@@ -9,21 +9,24 @@ import formalpdf
 
 
 class FFDNetDetector:
-    def __init__(self, model_or_path: str, device: int | str = "cpu") -> None:
+    def __init__(self, model_or_path: str, device: int | str = "cpu", use_fast: bool = False) -> None:
         self.device = device
-        model_path = self.get_model_path(model_or_path, device)
+        self.use_fast = use_fast
+
+        model_path = self.get_model_path(model_or_path, device, use_fast)
         self.model = YOLO(model_path, task="detect")
+
         self.id_to_cls = {0: "TextBox", 1: "ChoiceButton", 2: "Signature"}
 
-    def get_model_path(self, model_or_path: str, device: int | str = "cpu") -> str:
+    def get_model_path(self, model_or_path: str, device: int | str = "cpu", use_fast: bool = False) -> str:
         """
         Construct the path to the model weights based on:
-         (a) the requested model
-         (b) the device (if it's on CPU and a standard model is chosen, default to ONNX)
+         (a) the requested model (in the package or external path)
+         (b) --fast (if enabled, use ONNX, otherwise use pt)
         """
         model_upper = model_or_path.upper()
         if model_upper in ["FFDNET-S", "FFDNET-L"]:
-            extension = "pt" if isinstance(device, int) and device >= 0 else "onnx"
+            extension = "onnx" if use_fast else "pt"
             # load from the package - normalize to proper case
             model_name = "FFDNet-S" if model_upper == "FFDNET-S" else "FFDNet-L"
             model_path = Path(__file__).parent / "models" / f"{model_name}.{extension}"
@@ -36,10 +39,10 @@ class FFDNetDetector:
     def extract_widgets(
         self, pages: list[Page], confidence: float = 0.3, image_size: int = 1600
     ) -> dict[int, list[Widget]]:
-        if self.device == "cpu":
+        if self.use_fast:
             results = [
                 self.model.predict(
-                    p.image, iou=1, conf=confidence, augment=True, imgsz=1216
+                    p.image, iou=1, conf=confidence, augment=False, imgsz=1216
                 )
                 for p in pages
             ]
@@ -147,8 +150,9 @@ def prepare_form(
     device: int | str = "cpu",
     image_size: int = 1600,
     confidence: float = 0.3,
+    use_fast: bool = False,
 ):
-    detector = FFDNetDetector(model_or_path, device=device)
+    detector = FFDNetDetector(model_or_path, device=device, use_fast=use_fast)
     pages = render_pdf(input_path)
 
     results = detector.extract_widgets(
