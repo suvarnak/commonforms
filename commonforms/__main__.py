@@ -45,6 +45,12 @@ def main():
         default=0.3,
         help="Confidence threshold for detection (default: 0.3)",
     )
+    parser.add_argument(
+        "--fast",
+        action="store_true",
+        help="If running on a CPU, you can use --fast to get a 50% speedup with a small accuracy penalty",
+    )
+
 
     args = parser.parse_args()
 
@@ -57,6 +63,7 @@ def main():
         device=args.device,
         image_size=args.image_size,
         confidence=args.confidence,
+        fast=args.fast,
     )
 
 

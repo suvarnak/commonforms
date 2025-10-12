@@ -8,34 +8,59 @@ from commonforms.form_creator import PyPdfFormCreator
 import formalpdf
 
 
-class YOLODetector:
-    def __init__(self, model_or_path: str, device: int | str = "cpu") -> None:
+class FFDNetDetector:
+    def __init__(self, model_or_path: str, device: int | str = "cpu", fast: bool = False) -> None:
+        self.device = device
+        self.fast = fast
+
+        model_path = self.get_model_path(model_or_path, device, fast)
+        self.model = YOLO(model_path, task="detect")
+
+        self.id_to_cls = {0: "TextBox", 1: "ChoiceButton", 2: "Signature"}
+
+    def get_model_path(self, model_or_path: str, device: int | str = "cpu", fast: bool = False) -> str:
+        """
+        Construct the path to the model weights based on:
+         (a) the requested model (in the package or external path)
+         (b) --fast (if enabled, use ONNX, otherwise use pt)
+        """
         model_upper = model_or_path.upper()
         if model_upper in ["FFDNET-S", "FFDNET-L"]:
+            extension = "onnx" if fast else "pt"
             # load from the package - normalize to proper case
             model_name = "FFDNet-S" if model_upper == "FFDNET-S" else "FFDNet-L"
-            model_path = Path(__file__).parent / "models" / f"{model_name}.pt"
+            model_path = Path(__file__).parent / "models" / f"{model_name}.{extension}"
+            print(f"using model: {model_path}")
         else:
             model_path = model_or_path
 
-        self.model = YOLO(model_path)
-        self.device = device
-        self.id_to_cls = {0: "TextBox", 1: "ChoiceButton", 2: "Signature"}
+        return model_path
 
     def extract_widgets(
         self, pages: list[Page], confidence: float = 0.3, image_size: int = 1600
     ) -> dict[int, list[Widget]]:
-        results = self.model.predict(
-            [p.image for p in pages],
-            iou=0.1,
-            conf=confidence,
-            augment=True,
-            imgsz=image_size,
-            device=self.device,
-        )
+        if self.fast:
+            # overrides the image size to 1216, since that's all ONNX supports
+            results = [
+                self.model.predict(
+                    p.image, iou=1, conf=confidence, augment=False, imgsz=1216
+                )
+                for p in pages
+            ]
+        else:
+            results = self.model.predict(
+                [p.image for p in pages],
+                iou=0.1,
+                conf=confidence,
+                augment=True,
+                imgsz=image_size,
+                device=self.device,
+            )
 
         widgets = {}
         for page_ix, result in enumerate(results):
+            if isinstance(result, list):
+                result = result[0]
             # no predictions, skip page
             if result is None or result.boxes is None:
                 continue
@@ -126,8 +151,9 @@ def prepare_form(
     device: int | str = "cpu",
     image_size: int = 1600,
     confidence: float = 0.3,
+    fast: bool = False,
 ):
-    detector = YOLODetector(model_or_path, device=device)
+    detector = FFDNetDetector(model_or_path, device=device, fast=fast)
     pages = render_pdf(input_path)
 
     results = detector.extract_widgets(

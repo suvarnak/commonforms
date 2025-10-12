@@ -46,6 +46,7 @@ commonforms <input.pdf> <output.pdf>
 | `--device` | str | `cpu` | Device for inference (e.g., `cpu`, `cuda`, `0`) |
 | `--image-size` | int | `1600` | Image size for inference |
 | `--confidence` | float | `0.3` | Confidence threshold for detection |
+| `--fast` | flag | `False` | If running on a CPU, you can trade off accuracy for speed and run in about half the time |
 
 
 ## CommonForms API
