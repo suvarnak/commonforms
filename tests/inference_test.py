@@ -36,3 +36,9 @@ def test_encrypted_failure(tmp_path):
 
     with pytest.raises(commonforms.exceptions.EncryptedPdfError):
         commonforms.prepare_form("./tests/resources/encrypted.pdf", output_path)
+
+
+# TODO(joe): future tests around handling encrypted PDFs
+#   1. add a --password flag and test that inference doesn't fail
+#   2. if a password is provided, ensure that the _output_ PDF remains encrpyted 
+#      with the same password 
