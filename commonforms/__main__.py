@@ -51,7 +51,6 @@ def main():
         help="If running on a CPU, you can use --fast to get a 50% speedup with a small accuracy penalty",
     )
 
-
     args = parser.parse_args()
 
     prepare_form(
