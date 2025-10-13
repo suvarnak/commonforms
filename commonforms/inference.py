@@ -4,12 +4,16 @@ from pathlib import Path
 
 from commonforms.utils import BoundingBox, Page, Widget
 from commonforms.form_creator import PyPdfFormCreator
+from commonforms.exceptions import EncryptedPdfError
 
 import formalpdf
+import pypdfium2
 
 
 class FFDNetDetector:
-    def __init__(self, model_or_path: str, device: int | str = "cpu", fast: bool = False) -> None:
+    def __init__(
+        self, model_or_path: str, device: int | str = "cpu", fast: bool = False
+    ) -> None:
         self.device = device
         self.fast = fast
 
@@ -18,7 +22,9 @@ class FFDNetDetector:
 
         self.id_to_cls = {0: "TextBox", 1: "ChoiceButton", 2: "Signature"}
 
-    def get_model_path(self, model_or_path: str, device: int | str = "cpu", fast: bool = False) -> str:
+    def get_model_path(
+        self, model_or_path: str, device: int | str = "cpu", fast: bool = False
+    ) -> str:
         """
         Construct the path to the model weights based on:
          (a) the requested model (in the package or external path)
@@ -154,7 +160,11 @@ def prepare_form(
     fast: bool = False,
 ):
     detector = FFDNetDetector(model_or_path, device=device, fast=fast)
-    pages = render_pdf(input_path)
+
+    try:
+        pages = render_pdf(input_path)
+    except pypdfium2._helpers.misc.PdfiumError:
+        raise EncryptedPdfError
 
     results = detector.extract_widgets(
         pages, confidence=confidence, image_size=image_size
