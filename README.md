@@ -2,7 +2,7 @@
 
 🪄 Automatically convert a PDF into a fillable form.
 
-[📄 Hosted Models (detect.semanticdocs.org)](https://detect.semanticdocs.org) | [🤗 Dataset](https://huggingface.co/datasets/jbarrow/CommonForms) | [🦾 Models](https://github.com/jbarrow/commonforms/tree/main/commonforms/models)
+[💻 Hosted Models (detect.semanticdocs.org)](https://detect.semanticdocs.org) | [📄 CommonForms Paper](https://arxiv.org/abs/2509.16506) | [🤗 Dataset](https://huggingface.co/datasets/jbarrow/CommonForms) | [🦾 Models](https://github.com/jbarrow/commonforms/tree/main/commonforms/models)
 
 ![Pipeline](https://raw.githubusercontent.com/jbarrow/commonforms/main/assets/pipeline.png)
 
