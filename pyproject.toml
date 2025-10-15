@@ -12,6 +12,7 @@ urls = { Homepage = "https://github.com/jbarrow/commonforms" }
 dependencies = [
     "cryptography>=3.1",
     "formalpdf==0.1.5",
+    "huggingface-hub>=0.35.3",
     "onnx>=1.19.1",
     "onnxruntime>=1.23.1",
     "onnxslim>=0.1.71",
@@ -28,7 +29,7 @@ commonforms = "commonforms:main"
 packages = ["commonforms"]
 
 [tool.setuptools.package-data]
-commonforms = ["models/*.pt"]
+commonforms = ["models/*.pt", "models/*.onnx"]
 
 [dependency-groups]
 dev = [

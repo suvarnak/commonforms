@@ -1,6 +1,7 @@
 from __future__ import annotations
 from ultralytics import YOLO
 from pathlib import Path
+from huggingface_hub import hf_hub_download
 
 from commonforms.utils import BoundingBox, Page, Widget
 from commonforms.form_creator import PyPdfFormCreator
@@ -8,6 +9,15 @@ from commonforms.exceptions import EncryptedPdfError
 
 import formalpdf
 import pypdfium2
+
+
+# our mapping from (model_name, fast) to (repo_id, filename) for the huggingface hub
+models = {
+    ("FFDNET-S", True): ("jbarrow/FFDNet-S-cpu", "FFDNet-S.onnx"),
+    ("FFDNET-S", False): ("jbarrow/FFDNet-S", "FFDNet-S.pt"),
+    ("FFDNET-L", True): ("jbarrow/FFDNet-L-cpu", "FFDNet-L.onnx"),
+    ("FFDNET-L", False): ("jbarrow/FFDNet-L", "FFDNet-L.pt"),
+}
 
 
 class FFDNetDetector:
@@ -32,11 +42,9 @@ class FFDNetDetector:
         """
         model_upper = model_or_path.upper()
         if model_upper in ["FFDNET-S", "FFDNET-L"]:
-            extension = "onnx" if fast else "pt"
-            # load from the package - normalize to proper case
-            model_name = "FFDNet-S" if model_upper == "FFDNET-S" else "FFDNet-L"
-            model_path = Path(__file__).parent / "models" / f"{model_name}.{extension}"
-            print(f"using model: {model_path}")
+            # download the model, will just use the cached version if it already exists
+            repo_id, filename = models[(model_upper, fast)] 
+            model_path = hf_hub_download(repo_id=repo_id, filename=filename) 
         else:
             model_path = model_or_path
 
