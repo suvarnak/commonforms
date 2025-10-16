@@ -64,9 +64,31 @@ prepare_form(
 
 All of the above arguments are keyword arguments to the `prepare_form` function.
 
+## Interactive Streamlit App
+
+For fine-tuned control over field detection, use the interactive web interface:
+
+```sh
+streamlit run streamlit_app.py
+```
+
+The Streamlit app provides:
+- **Adjustable confidence threshold** - Lower the confidence score if desirable fields aren't detected
+- **Visual field selection** - Preview detected fields on each page and choose which ones to make fillable
+- **Interactive editing** - Uncheck fields you don't want to include in the final PDF
+
+This is especially useful when the default settings miss important form fields or detect unwanted elements.
+
 ## Dataset Prep
 
 🚧 Code for dataset prep exists in the `dataset` folder.
+
+## Troubleshooting
+
+If form fields aren't being detected:
+1. Use the Streamlit app to adjust the confidence threshold (try lowering from 0.3 to 0.1-0.2)
+2. Visually inspect detected fields and manually select which ones to include
+3. For better accuracy, use `--model FFDNet-L` instead of `FFDNet-S`
 
 
 # Citation
